@@ -2,6 +2,7 @@ plugins {
     id 'com.android.application'
     id 'kotlin-android'
     id 'kotlin-kapt'
+    id 'dagger.hilt.android.plugin'
 }
 
 android {
@@ -59,7 +60,13 @@ dependencies {
     implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
     implementation "com.squareup.okhttp3:okhttp:$okhttp_version"
     implementation "com.squareup.okhttp3:logging-interceptor:$okhttp_version"
-    implementation "com.jakewharton.retrofit:retrofit2-rxjava2-adapter:3.0.0"
+
+    // RXJava
+    implementation "io.reactivex.rxjava3:rxjava:3.0.12"
+    implementation "io.reactivex.rxjava3:rxandroid:3.0.0"
+
+    // RxAdapter
+    implementation "com.github.akarnokd:rxjava3-retrofit-adapter:3.0.0"
 
     // Hilt Dagger
     implementation "com.google.dagger:hilt-android:$hilt_version"
@@ -72,8 +79,5 @@ dependencies {
     // LiveData
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
 
-    // Reactive
-    implementation "io.reactivex.rxjava2:rxjava:$rootProject.rxjava_version"
-    implementation "io.reactivex.rxjava2:rxandroid:$rootProject.rxandroid_version"
 
 }
