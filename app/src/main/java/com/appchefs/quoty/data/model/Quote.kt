@@ -1,18 +1,19 @@
 package com.appchefs.quoty.data.model
 
-import com.google.gson.annotations.Expose
-import com.google.gson.annotations.SerializedName
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import com.appchefs.quoty.data.model.Quote.Companion.TABLE_NAME
 
+@Entity(tableName = TABLE_NAME)
 data class Quote(
-    @Expose
-    @SerializedName("id")
-    val id: String,
 
-    @Expose
-    @SerializedName("content")
-    val quoteContent: String,
-
-    @Expose
-    @SerializedName("author")
-    val author: String,
-)
+    @PrimaryKey
+    var id: Int? = 0,
+    var author: String? = null,
+    var quoteContent: String? = null,
+    var isFavorite: Boolean? = false
+){
+    companion object {
+        const val TABLE_NAME = "table_quote"
+    }
+}
