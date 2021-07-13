@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Quoty</string>
+    <string name="api_error">Something went wrong, not able to fetch the data</string>
 </resources>

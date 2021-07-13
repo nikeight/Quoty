@@ -9,6 +9,8 @@ import javax.inject.Singleton
 @Singleton
 interface NetworkService {
 
+    // Todo: Correct the query part methods.
+
     @GET(Endpoints.RANDOM)
     fun getRandomQuotes(): Response<Quote>
 

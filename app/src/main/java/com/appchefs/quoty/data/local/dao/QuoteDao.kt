@@ -13,5 +13,5 @@ interface QuoteDao {
     suspend fun addQuote(quote: Quote)
 
     @Query("SELECT * FROM ${Quote.TABLE_NAME} WHERE ID = :quoteId")
-    suspend fun getQuote(quoteId: Int) : kotlinx.coroutines.flow.Flow<Quote>
+    fun getQuote(quoteId: Int): kotlinx.coroutines.flow.Flow<Quote>
 }
