@@ -1,7 +1,7 @@
 package com.appchefs.quoty.data.repo
 
-import Resource
 import androidx.annotation.WorkerThread
+import com.appchefs.quoty.utils.Resource
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import retrofit2.Response

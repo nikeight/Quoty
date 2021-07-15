@@ -39,6 +39,8 @@ object Moshi {
 object Retrofit {
     const val retrofit = "com.squareup.retrofit2:retrofit:2.9.0"
     const val moshiRetrofitConverter = "com.squareup.retrofit2:converter-moshi:2.9.0"
+    const val gsonRetrofitConverter = "com.squareup.retrofit2:converter-gson:2.9.0"
+    const val okhttp = "com.squareup.okhttp3:okhttp:4.9.0"
 }
 
 object Coroutines {

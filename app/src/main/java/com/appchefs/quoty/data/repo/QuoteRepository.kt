@@ -1,6 +1,6 @@
 package com.appchefs.quoty.data.repo
 
-import Resource
+import com.appchefs.quoty.utils.Resource
 import com.appchefs.quoty.data.local.dao.QuoteDao
 import com.appchefs.quoty.data.model.Quote
 import com.appchefs.quoty.data.remote.NetworkService

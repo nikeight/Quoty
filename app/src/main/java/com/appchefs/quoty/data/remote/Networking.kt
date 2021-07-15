@@ -1,23 +1,17 @@
 package com.appchefs.quoty.data.remote
 
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import android.util.Log
 import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
+import retrofit2.converter.gson.GsonConverterFactory
 
 object Networking {
 
-    private val BASE_URL = "api.quotable.io"
+    private val BASE_URL = "https://api.quotable.io/"
 
     fun create(): NetworkService {
         return Retrofit.Builder()
             .baseUrl(BASE_URL)
-            .addConverterFactory(
-                MoshiConverterFactory.create(
-                    Moshi.Builder()
-                        .add(KotlinJsonAdapterFactory()).build()
-                )
-            )
+            .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(NetworkService::class.java)
     }

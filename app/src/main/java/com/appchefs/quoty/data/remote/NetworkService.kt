@@ -11,10 +11,10 @@ interface NetworkService {
 
     // Todo: Correct the query part methods.
 
-    @GET(Endpoints.RANDOM)
-    fun getRandomQuotes(): Response<Quote>
+    @GET("/random")
+    suspend fun getRandomQuotes(): Response<Quote>
 
-    @GET()
+    @GET(Endpoints.RANDOM)
     fun getQuote(
         @Query("tags") tags: String
     ) : Response<Quote>
