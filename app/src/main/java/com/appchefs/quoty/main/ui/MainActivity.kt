@@ -10,6 +10,7 @@ import com.appchefs.quoty.data.remote.Networking
 import com.appchefs.quoty.databinding.ActivityMainBinding
 import com.appchefs.quoty.main.base.BaseActivity
 import com.appchefs.quoty.main.viewmodel.MainViewModel
+import com.appchefs.quoty.main.viewmodel.ResponseViewModel
 import com.appchefs.quoty.utils.Status
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
@@ -19,92 +20,80 @@ import kotlinx.coroutines.launch
 
 @ExperimentalCoroutinesApi
 @AndroidEntryPoint
-class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
+class MainActivity : BaseActivity<ResponseViewModel, ActivityMainBinding>() {
 
-    override val mViewModel: MainViewModel by viewModels()
+    override val mViewModel: ResponseViewModel by viewModels()
+    private var currentTag: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(mViewBinding.root)
-//        clickEvents()
-
-        GlobalScope.launch(Dispatchers.IO) {
-            val response = Networking.create().getRandomQuotes()
-            if (response.isSuccessful){
-                Log.d("Response",response.body()?.quoteContent.toString())
-            }else{
-                Log.d("Response","Failed API")
-            }
-        }
+        clickEvents()
     }
 
     override fun getViewBinding(): ActivityMainBinding = ActivityMainBinding.inflate(layoutInflater)
 
     override fun onStart() {
         super.onStart()
-//        getRandomQuoteObserver()
-//        getQuoteObserver()
+        getRandomQuoteObserver()
+        getQuoteObserver()
     }
 
     private fun clickEvents(){
         mViewBinding.btnRandom.setOnClickListener {
+            currentTag = "random"
             mViewModel.getRandomQuote()
         }
 
         mViewBinding.btnWisdom.setOnClickListener {
-            mViewModel.getQuote("wisdom")
+            currentTag = "wisdom"
+            mViewModel.getQuoteByTag("wisdom")
         }
 
 
         mViewBinding.btnLife.setOnClickListener {
-            mViewModel.getQuote("life")
+            currentTag = "life"
+            mViewModel.getQuoteByTag("life")
         }
 
 
         mViewBinding.btnTech.setOnClickListener {
-            mViewModel.getQuote("technology")
+            currentTag = "technology"
+            mViewModel.getQuoteByTag("technology")
+        }
+
+        mViewBinding.fabNewQuote.setOnClickListener {
+            when(currentTag){
+                "random" -> mViewModel.getRandomQuote()
+                "wisdom" -> mViewModel.getQuoteByTag("wisdom")
+                "life" -> mViewModel.getQuoteByTag("life")
+                "technology" -> mViewModel.getQuoteByTag("technology")
+                else -> mViewModel.getRandomQuote()
+            }
         }
 
     }
 
     private fun getRandomQuoteObserver(){
-        mViewModel.randomQuote.observe(this, Observer {state ->
-            when(state){
-                is Status.Success -> {
-                    mViewBinding.tvQuote.text = state.data.quoteContent
-                    mViewBinding.tvAuthor.text = state.data.author
-                }
-
-                is Status.Error -> {
-                    Toast.makeText(this,"Couldn't able to load the quotes",Toast.LENGTH_SHORT)
-                        .show()
-                }
-
-                is Status.Loading -> {
-                    Toast.makeText(this,"Loading",Toast.LENGTH_SHORT)
-                        .show()
-                }
+        mViewModel.randomQuote.observe(this, Observer {quote ->
+            if (quote != null){
+                mViewBinding.tvQuote.text = quote.content
+                mViewBinding.tvAuthor.text = quote.author
+            }else{
+                mViewBinding.tvQuote.text = "Loading"
+                mViewBinding.tvAuthor.text = "Loading"
             }
         })
     }
 
     private fun getQuoteObserver(){
-        mViewModel.quote.observe(this, Observer {state ->
-            when(state){
-                is Status.Success -> {
-                    mViewBinding.tvQuote.text = state.data.quoteContent
-                    mViewBinding.tvAuthor.text = state.data.author
-                }
-
-                is Status.Error -> {
-                    Toast.makeText(this,"Couldn't able to load the quotes",Toast.LENGTH_SHORT)
-                        .show()
-                }
-
-                is Status.Loading -> {
-                    Toast.makeText(this,"Loading",Toast.LENGTH_SHORT)
-                        .show()
-                }
+        mViewModel.quote.observe(this, Observer {quote ->
+            if (quote != null){
+                mViewBinding.tvQuote.text = quote.content
+                mViewBinding.tvAuthor.text = quote.author
+            }else{
+                mViewBinding.tvQuote.text = "Loading"
+                mViewBinding.tvAuthor.text = "Loading"
             }
         })
     }

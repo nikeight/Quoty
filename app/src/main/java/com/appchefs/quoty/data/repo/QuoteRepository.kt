@@ -55,7 +55,7 @@ class DefaultQuoteRepository @Inject constructor(
             }
 
             override fun fetchFromLocal(): Flow<Quote> {
-                // Showing atleast any default quote.
+                // Showing at least any default quote.
                 return quoteDao.getQuote(postId ?: 1)
             }
 
