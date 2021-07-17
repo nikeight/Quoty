@@ -124,25 +124,35 @@ class MainActivity : BaseActivity<ResponseViewModel, ActivityMainBinding>() {
     }
 
     private fun getRandomQuoteObserver() {
-        mViewModel.randomQuote.observe(this, Observer { quote ->
-            if (quote != null) {
-                mViewBinding.tvQuote.text = quote.content
-                mViewBinding.tvAuthor.text = quote.author
-            } else {
-                mViewBinding.tvQuote.text = "Loading"
-                mViewBinding.tvAuthor.text = "Loading"
+        mViewModel.randomQuote.observe(this, Observer { state ->
+            when (state) {
+                is Status.Error ->{
+                    showToast(state.message)
+                }
+                is Status.Success ->{
+                    mViewBinding.tvQuote.text = state.data.content
+                    mViewBinding.tvAuthor.text = state.data.author
+                }
+                else -> {
+                    showToast("Loading")
+                }
             }
         })
     }
 
     private fun getQuoteObserver() {
-        mViewModel.quote.observe(this, Observer { quote ->
-            if (quote != null) {
-                mViewBinding.tvQuote.text = quote.content
-                mViewBinding.tvAuthor.text = quote.author
-            } else {
-                mViewBinding.tvQuote.text = "Loading"
-                mViewBinding.tvAuthor.text = "Loading"
+        mViewModel.quote.observe(this, Observer { state ->
+            when (state) {
+                is Status.Error -> {
+                    showToast(state.message)
+                }
+                is Status.Success ->{
+                    mViewBinding.tvQuote.text = state.data.content
+                    mViewBinding.tvAuthor.text = state.data.author
+                }
+                else -> {
+                    showToast("Loading")
+                }
             }
         })
     }
@@ -184,5 +194,9 @@ class MainActivity : BaseActivity<ResponseViewModel, ActivityMainBinding>() {
 
     fun View.hide() {
         visibility = View.GONE
+    }
+
+    fun showToast(msg: String){
+        Toast.makeText(this,msg,Toast.LENGTH_SHORT).show()
     }
 }
