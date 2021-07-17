@@ -5,4 +5,6 @@
 
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="networkConnected">#14DA1C</color>
+    <color name="networkNotAvailable">#F31717</color>
 </resources>

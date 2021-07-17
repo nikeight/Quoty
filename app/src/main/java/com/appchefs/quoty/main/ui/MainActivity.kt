@@ -1,16 +1,26 @@
 package com.appchefs.quoty.main.ui
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
+import com.appchefs.quoty.R
 import com.appchefs.quoty.data.remote.NetworkService
 import com.appchefs.quoty.data.remote.Networking
 import com.appchefs.quoty.databinding.ActivityMainBinding
 import com.appchefs.quoty.main.base.BaseActivity
 import com.appchefs.quoty.main.viewmodel.MainViewModel
 import com.appchefs.quoty.main.viewmodel.ResponseViewModel
+import com.appchefs.quoty.utils.NetworkUtils
 import com.appchefs.quoty.utils.Status
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
@@ -37,9 +47,48 @@ class MainActivity : BaseActivity<ResponseViewModel, ActivityMainBinding>() {
         super.onStart()
         getRandomQuoteObserver()
         getQuoteObserver()
+        networkCheck()
     }
 
-    private fun clickEvents(){
+    private fun networkCheck() {
+        NetworkUtils.getNetworkLiveData(applicationContext).observe(this) { isConnected ->
+            if (!isConnected) {
+                mViewBinding.textViewNetworkStatus.text = "No Connections"
+                mViewBinding.networkStatusLayout.apply {
+                    show()
+                    setBackgroundColor(
+                        ContextCompat.getColor(
+                            applicationContext,
+                            R.color.networkNotAvailable
+                        )
+                    )
+                }
+            } else {
+                // TODO: Implement the State of the LiveData
+                mViewBinding.textViewNetworkStatus.text = "Back Online"
+                mViewBinding.networkStatusLayout.apply {
+                    setBackgroundColor(
+                        ContextCompat.getColor(
+                            applicationContext,
+                            R.color.networkConnected
+                        )
+                    )
+
+                    animate()
+                        .alpha(1f)
+                        .setStartDelay(1000L)
+                        .setDuration(1000L)
+                        .setListener(object : AnimatorListenerAdapter() {
+                            override fun onAnimationEnd(animation: Animator) {
+                                hide()
+                            }
+                        })
+                }
+            }
+        }
+    }
+
+    private fun clickEvents() {
         mViewBinding.btnRandom.setOnClickListener {
             currentTag = "random"
             mViewModel.getRandomQuote()
@@ -63,7 +112,7 @@ class MainActivity : BaseActivity<ResponseViewModel, ActivityMainBinding>() {
         }
 
         mViewBinding.fabNewQuote.setOnClickListener {
-            when(currentTag){
+            when (currentTag) {
                 "random" -> mViewModel.getRandomQuote()
                 "wisdom" -> mViewModel.getQuoteByTag("wisdom")
                 "life" -> mViewModel.getQuoteByTag("life")
@@ -74,27 +123,66 @@ class MainActivity : BaseActivity<ResponseViewModel, ActivityMainBinding>() {
 
     }
 
-    private fun getRandomQuoteObserver(){
-        mViewModel.randomQuote.observe(this, Observer {quote ->
-            if (quote != null){
+    private fun getRandomQuoteObserver() {
+        mViewModel.randomQuote.observe(this, Observer { quote ->
+            if (quote != null) {
                 mViewBinding.tvQuote.text = quote.content
                 mViewBinding.tvAuthor.text = quote.author
-            }else{
+            } else {
                 mViewBinding.tvQuote.text = "Loading"
                 mViewBinding.tvAuthor.text = "Loading"
             }
         })
     }
 
-    private fun getQuoteObserver(){
-        mViewModel.quote.observe(this, Observer {quote ->
-            if (quote != null){
+    private fun getQuoteObserver() {
+        mViewModel.quote.observe(this, Observer { quote ->
+            if (quote != null) {
                 mViewBinding.tvQuote.text = quote.content
                 mViewBinding.tvAuthor.text = quote.author
-            }else{
+            } else {
                 mViewBinding.tvQuote.text = "Loading"
                 mViewBinding.tvAuthor.text = "Loading"
             }
         })
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.theme_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.theme_menu_icon -> {
+                // Get new mode.
+                val mode =
+                    if ((resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) ==
+                        Configuration.UI_MODE_NIGHT_NO
+                    ) {
+                        // Dark Theme by default
+                        AppCompatDelegate.MODE_NIGHT_YES
+                    } else {
+                        // uses dark theme when the Phone is in Battery Saver mode.
+                        AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY
+                    }
+
+                // Change UI Mode
+                AppCompatDelegate.setDefaultNightMode(mode)
+                //TODO: Change the Icon.
+                true
+            }
+
+            else -> true
+        }
+    }
+
+
+    fun View.show() {
+        visibility = View.VISIBLE
+    }
+
+    fun View.hide() {
+        visibility = View.GONE
     }
 }
