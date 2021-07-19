@@ -2,17 +2,17 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "8eb4866b6f440bf6723f7708031f77f3",
+    "identityHash": "4f654f2c6d2843057ffd2a531c5f5387",
     "entities": [
       {
         "tableName": "table_quote",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER, `author` TEXT, `quoteContent` TEXT, `isFavorite` INTEGER, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `author` TEXT, `quoteContent` TEXT, `authorSlug` TEXT, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
             "columnName": "id",
-            "affinity": "INTEGER",
-            "notNull": false
+            "affinity": "TEXT",
+            "notNull": true
           },
           {
             "fieldPath": "author",
@@ -27,9 +27,9 @@
             "notNull": false
           },
           {
-            "fieldPath": "isFavorite",
-            "columnName": "isFavorite",
-            "affinity": "INTEGER",
+            "fieldPath": "authorSlug",
+            "columnName": "authorSlug",
+            "affinity": "TEXT",
             "notNull": false
           }
         ],
@@ -46,7 +46,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '8eb4866b6f440bf6723f7708031f77f3')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '4f654f2c6d2843057ffd2a531c5f5387')"
     ]
   }
 }

@@ -20,7 +20,7 @@ class DefaultQuoteRepository @Inject constructor(
     private val networkService: NetworkService
 ) : QuoteRepository {
 
-    private var postId: Int? = null
+    private var postId: String? = null
 
     override fun getRandomQuote(): Flow<Resource<Quote>> {
        return object : NetworkBoundRepository<Quote, Quote>(){
@@ -56,7 +56,7 @@ class DefaultQuoteRepository @Inject constructor(
 
             override fun fetchFromLocal(): Flow<Quote> {
                 // Showing at least any default quote.
-                return quoteDao.getQuote(postId ?: 1)
+                return quoteDao.getQuote(postId ?: "")
             }
 
         }.asFlow()

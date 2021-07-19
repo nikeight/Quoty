@@ -16,21 +16,28 @@ import androidx.lifecycle.Observer
 import com.appchefs.quoty.R
 import com.appchefs.quoty.data.remote.NetworkService
 import com.appchefs.quoty.data.remote.Networking
+import com.appchefs.quoty.data.repo.QuoteRepository
 import com.appchefs.quoty.databinding.ActivityMainBinding
 import com.appchefs.quoty.main.base.BaseActivity
 import com.appchefs.quoty.main.viewmodel.MainViewModel
 import com.appchefs.quoty.main.viewmodel.ResponseViewModel
 import com.appchefs.quoty.utils.NetworkUtils
+import com.appchefs.quoty.utils.Resource
 import com.appchefs.quoty.utils.Status
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @ExperimentalCoroutinesApi
 @AndroidEntryPoint
 class MainActivity : BaseActivity<ResponseViewModel, ActivityMainBinding>() {
+
+    @Inject
+    lateinit var quoteRepository: QuoteRepository
 
     override val mViewModel: ResponseViewModel by viewModels()
     private var currentTag: String? = null
@@ -39,6 +46,19 @@ class MainActivity : BaseActivity<ResponseViewModel, ActivityMainBinding>() {
         super.onCreate(savedInstanceState)
         setContentView(mViewBinding.root)
         clickEvents()
+
+        GlobalScope.launch {
+            quoteRepository.getRandomQuote().collect { resources ->
+                when(resources){
+                    is Resource.Success -> {
+                        Log.d("ResponseQuoteDAO",resources.data.id)
+                    }
+                    is Resource.Failed -> {
+                        Log.d("ResponseQuoteDAO",resources.message)
+                    }
+                }
+            }
+        }
     }
 
     override fun getViewBinding(): ActivityMainBinding = ActivityMainBinding.inflate(layoutInflater)

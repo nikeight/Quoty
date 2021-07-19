@@ -27,15 +27,17 @@ class ResponseViewModel @Inject constructor(
 
     fun getRandomQuote() {
         viewModelScope.launch {
-            remoteRepository.getRandomApiResponse().let { response ->
+            try{
+                val response = remoteRepository.getRandomApiResponse()
                 if (response.isSuccessful) {
                     response.body()?.let {
                         _randomQuote.postValue(Status.success(it))
                     }
                 }else{
                     Log.d("Response","${response.code()}")
-                    _randomQuote.postValue(Status.error("Waiting for network, try again"))
                 }
+            }catch (e: Exception){
+                _randomQuote.postValue(Status.error(e.message.toString()))
             }
         }
     }

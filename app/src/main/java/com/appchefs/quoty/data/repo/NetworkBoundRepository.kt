@@ -30,7 +30,7 @@ abstract class NetworkBoundRepository<RESULT, REQUEST> {
     fun asFlow() = flow<Resource<RESULT>> {
 
         // Emit the saved local data first
-        emit(Resource.Success(fetchFromLocal().first()))
+//        emit(Resource.Success(fetchFromLocal().single()))
 
         // fetch another quote
         val apiResponse = fetchFromRemote()
