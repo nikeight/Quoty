@@ -97,6 +97,7 @@ dependencies {
     // Retrofit
     implementation(Retrofit.retrofit)
     implementation(Retrofit.gsonRetrofitConverter)
+    implementation(Retrofit.moshiRetrofitConverter)
     implementation(Retrofit.okhttp)
 
     // Moshi

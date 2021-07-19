@@ -31,7 +31,6 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_wisdom"
-            style="@style/ColouredButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -76,9 +75,9 @@
             android:id="@+id/tv_quote"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="24dp"
             android:layout_marginTop="96dp"
-            android:layout_marginEnd="8dp"
+            android:layout_marginEnd="24dp"
             android:text="Things that you own end up by owning you"
             android:textAlignment="center"
             android:textSize="18dp"

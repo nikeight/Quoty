@@ -1,7 +1,6 @@
 package com.appchefs.quoty.data.remote
 
 import com.appchefs.quoty.data.model.Quote
-import com.appchefs.quoty.data.model.QuoteAPI
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -12,20 +11,11 @@ interface NetworkService {
 
     // Todo: Correct the query part methods.
 
-    @GET("/random")
+    @GET(Endpoints.RANDOM)
     suspend fun getRandomQuotes(): Response<Quote>
 
     @GET(Endpoints.RANDOM)
-    fun getQuote(
+    suspend fun getQuote(
         @Query("tags") tags: String
     ) : Response<Quote>
-
-    // For the Network Response only
-    @GET("/random")
-    suspend fun getRandomQuotesAPIResponse(): Response<QuoteAPI>
-
-    @GET(Endpoints.RANDOM)
-    suspend fun getRandomQuotesAPIResponse(
-        @Query("tags") tags: String
-    ) : Response<QuoteAPI>
 }
