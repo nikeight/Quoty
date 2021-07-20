@@ -35,16 +35,6 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
         super.onCreate(savedInstanceState)
         setContentView(mViewBinding.root)
         clickEvents()
-
-        mViewModel.getAllQuotes()
-        mViewModel.allQuote.observe(this, Observer {
-            it?.let {
-                Log.d("AllQuotes",it.toMutableList().toString())
-                it.map { quote ->
-                    Log.d("QuoteDB", quote.author.toString())
-                }
-            }
-        })
     }
 
     override fun getViewBinding(): ActivityMainBinding = ActivityMainBinding.inflate(layoutInflater)
