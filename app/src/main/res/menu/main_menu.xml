@@ -7,4 +7,10 @@
         android:icon="@drawable/ic_dark_vector"
         app:showAsAction="always"
         android:title="Theme" />
+
+    <item
+        android:id="@+id/saved_item_icon"
+        android:icon="@drawable/ic_saved_vector"
+        app:showAsAction="always"
+        android:title="SavedItem" />
 </menu>
