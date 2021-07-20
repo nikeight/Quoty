@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.appchefs.quoty.data.model.Quote
+import com.appchefs.quoty.data.repo.LocalRepo
 import com.appchefs.quoty.data.repo.QuoteRepository
 import com.appchefs.quoty.utils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,7 +19,8 @@ import javax.inject.Inject
 @ExperimentalCoroutinesApi
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val quoteRepository: QuoteRepository
+    private val quoteRepository: QuoteRepository,
+    private val localRepo: LocalRepo
 ) : ViewModel() {
 
     private val _randomQuote = MutableLiveData<Status<Quote>>()
@@ -26,6 +28,9 @@ class MainViewModel @Inject constructor(
 
     private val _quote = MutableLiveData<Status<Quote>>()
     val quote: LiveData<Status<Quote>> = _quote
+
+    private val _allQuotes = MutableLiveData<List<Quote>>()
+    val allQuote: LiveData<List<Quote>> = _allQuotes
 
     fun getRandomQuote() {
         viewModelScope.launch {
@@ -45,4 +50,11 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    fun getAllQuotes() {
+        viewModelScope.launch {
+            localRepo.getAllQuotesFromDb().let {
+                _allQuotes.value = it
+            }
+        }
+    }
 }

@@ -4,6 +4,7 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.content.res.Configuration
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -20,6 +21,8 @@ import com.appchefs.quoty.utils.NetworkUtils
 import com.appchefs.quoty.utils.Status
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 @ExperimentalCoroutinesApi
 @AndroidEntryPoint
@@ -33,6 +36,16 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
         super.onCreate(savedInstanceState)
         setContentView(mViewBinding.root)
         clickEvents()
+
+        mViewModel.getAllQuotes()
+        mViewModel.allQuote.observe(this, Observer {
+            it?.let {
+                Log.d("AllQuotes",it.toMutableList().toString())
+                it.map { quote ->
+                    Log.d("QuoteDB", quote.author.toString())
+                }
+            }
+        })
     }
 
     override fun getViewBinding(): ActivityMainBinding = ActivityMainBinding.inflate(layoutInflater)
@@ -120,10 +133,10 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
     private fun getRandomQuoteObserver() {
         mViewModel.randomQuote.observe(this, Observer { state ->
             when (state) {
-                is Status.Error ->{
+                is Status.Error -> {
                     showToast(state.message)
                 }
-                is Status.Success ->{
+                is Status.Success -> {
                     mViewBinding.tvQuote.text = state.data.quoteContent
                     mViewBinding.tvAuthor.text = state.data.author
                 }
@@ -140,7 +153,7 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
                 is Status.Error -> {
                     showToast(state.message)
                 }
-                is Status.Success ->{
+                is Status.Success -> {
                     mViewBinding.tvQuote.text = state.data.quoteContent
                     mViewBinding.tvAuthor.text = state.data.author
                 }
@@ -190,7 +203,7 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
         visibility = View.GONE
     }
 
-    fun showToast(msg: String){
-        Toast.makeText(this,msg,Toast.LENGTH_SHORT).show()
+    fun showToast(msg: String) {
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
     }
 }

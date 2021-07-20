@@ -14,4 +14,7 @@ interface QuoteDao {
 
     @Query("SELECT * FROM ${Quote.TABLE_NAME} WHERE ID = :quoteId")
     fun getQuote(quoteId: String): kotlinx.coroutines.flow.Flow<Quote>
+
+    @Query("SELECT * FROM ${Quote.TABLE_NAME}")
+    suspend fun getAllQuotes() : List<Quote>
 }
