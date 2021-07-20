@@ -1,9 +1,6 @@
 package com.appchefs.quoty.data.local.dao
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import com.appchefs.quoty.data.model.Quote
 
 @Dao
@@ -17,4 +14,10 @@ interface QuoteDao {
 
     @Query("SELECT * FROM ${Quote.TABLE_NAME}")
     suspend fun getAllQuotes() : List<Quote>
+
+    @Delete
+    suspend fun delete(quote: Quote)
+
+    @Update
+    suspend fun update(quote: Quote)
 }
