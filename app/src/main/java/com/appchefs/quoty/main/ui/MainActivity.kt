@@ -2,6 +2,7 @@ package com.appchefs.quoty.main.ui
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
+import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
@@ -21,8 +22,6 @@ import com.appchefs.quoty.utils.NetworkUtils
 import com.appchefs.quoty.utils.Status
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 
 @ExperimentalCoroutinesApi
 @AndroidEntryPoint
@@ -36,16 +35,6 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
         super.onCreate(savedInstanceState)
         setContentView(mViewBinding.root)
         clickEvents()
-
-        mViewModel.getAllQuotes()
-        mViewModel.allQuote.observe(this, Observer {
-            it?.let {
-                Log.d("AllQuotes",it.toMutableList().toString())
-                it.map { quote ->
-                    Log.d("QuoteDB", quote.author.toString())
-                }
-            }
-        })
     }
 
     override fun getViewBinding(): ActivityMainBinding = ActivityMainBinding.inflate(layoutInflater)
@@ -165,7 +154,7 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.theme_menu, menu)
+        menuInflater.inflate(R.menu.main_menu, menu)
         return true
     }
 
@@ -187,6 +176,11 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
                 // Change UI Mode
                 AppCompatDelegate.setDefaultNightMode(mode)
                 //TODO: Change the Icon.
+                true
+            }
+
+            R.id.saved_item_icon -> {
+                startActivity(Intent(this,AllQuotesActivity::class.java))
                 true
             }
 
