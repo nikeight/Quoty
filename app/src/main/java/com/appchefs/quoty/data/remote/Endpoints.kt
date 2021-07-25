@@ -2,5 +2,5 @@ package com.appchefs.quoty.data.remote
 
 object Endpoints {
 
-    const val RANDOM = "random"
+    const val RANDOM = "/random"
 }

@@ -21,14 +21,9 @@ data class Quote(
     @SerializedName("authorSlug")
     var authorSlug: String? = null,
 
+    var isFavorite : Boolean = false
 ) {
     companion object {
         const val TABLE_NAME = "table_quote"
     }
 }
-
-//
-//@SerializedName("tags")
-//var list: List<String>,
-//
-//var isFavorite: Boolean? = false

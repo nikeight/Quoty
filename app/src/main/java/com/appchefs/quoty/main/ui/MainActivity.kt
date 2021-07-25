@@ -14,32 +14,22 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import com.appchefs.quoty.R
-import com.appchefs.quoty.data.remote.NetworkService
-import com.appchefs.quoty.data.remote.Networking
-import com.appchefs.quoty.data.repo.QuoteRepository
 import com.appchefs.quoty.databinding.ActivityMainBinding
 import com.appchefs.quoty.main.base.BaseActivity
 import com.appchefs.quoty.main.viewmodel.MainViewModel
-import com.appchefs.quoty.main.viewmodel.ResponseViewModel
 import com.appchefs.quoty.utils.NetworkUtils
-import com.appchefs.quoty.utils.Resource
 import com.appchefs.quoty.utils.Status
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @ExperimentalCoroutinesApi
 @AndroidEntryPoint
-class MainActivity : BaseActivity<ResponseViewModel, ActivityMainBinding>() {
+class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
 
-    @Inject
-    lateinit var quoteRepository: QuoteRepository
 
-    override val mViewModel: ResponseViewModel by viewModels()
+    override val mViewModel: MainViewModel by viewModels()
     private var currentTag: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,18 +37,15 @@ class MainActivity : BaseActivity<ResponseViewModel, ActivityMainBinding>() {
         setContentView(mViewBinding.root)
         clickEvents()
 
-        GlobalScope.launch {
-            quoteRepository.getRandomQuote().collect { resources ->
-                when(resources){
-                    is Resource.Success -> {
-                        Log.d("ResponseQuoteDAO",resources.data.id)
-                    }
-                    is Resource.Failed -> {
-                        Log.d("ResponseQuoteDAO",resources.message)
-                    }
+        mViewModel.getAllQuotes()
+        mViewModel.allQuote.observe(this, Observer {
+            it?.let {
+                Log.d("AllQuotes",it.toMutableList().toString())
+                it.map { quote ->
+                    Log.d("QuoteDB", quote.author.toString())
                 }
             }
-        }
+        })
     }
 
     override fun getViewBinding(): ActivityMainBinding = ActivityMainBinding.inflate(layoutInflater)
@@ -116,27 +103,27 @@ class MainActivity : BaseActivity<ResponseViewModel, ActivityMainBinding>() {
 
         mViewBinding.btnWisdom.setOnClickListener {
             currentTag = "wisdom"
-            mViewModel.getQuoteByTag("wisdom")
+            mViewModel.getQuote("wisdom")
         }
 
 
         mViewBinding.btnLife.setOnClickListener {
             currentTag = "life"
-            mViewModel.getQuoteByTag("life")
+            mViewModel.getQuote("life")
         }
 
 
         mViewBinding.btnTech.setOnClickListener {
             currentTag = "technology"
-            mViewModel.getQuoteByTag("technology")
+            mViewModel.getQuote("technology")
         }
 
         mViewBinding.fabNewQuote.setOnClickListener {
             when (currentTag) {
                 "random" -> mViewModel.getRandomQuote()
-                "wisdom" -> mViewModel.getQuoteByTag("wisdom")
-                "life" -> mViewModel.getQuoteByTag("life")
-                "technology" -> mViewModel.getQuoteByTag("technology")
+                "wisdom" -> mViewModel.getQuote("wisdom")
+                "life" -> mViewModel.getQuote("life")
+                "technology" -> mViewModel.getQuote("technology")
                 else -> mViewModel.getRandomQuote()
             }
         }
@@ -146,11 +133,11 @@ class MainActivity : BaseActivity<ResponseViewModel, ActivityMainBinding>() {
     private fun getRandomQuoteObserver() {
         mViewModel.randomQuote.observe(this, Observer { state ->
             when (state) {
-                is Status.Error ->{
+                is Status.Error -> {
                     showToast(state.message)
                 }
-                is Status.Success ->{
-                    mViewBinding.tvQuote.text = state.data.content
+                is Status.Success -> {
+                    mViewBinding.tvQuote.text = state.data.quoteContent
                     mViewBinding.tvAuthor.text = state.data.author
                 }
                 else -> {
@@ -166,8 +153,8 @@ class MainActivity : BaseActivity<ResponseViewModel, ActivityMainBinding>() {
                 is Status.Error -> {
                     showToast(state.message)
                 }
-                is Status.Success ->{
-                    mViewBinding.tvQuote.text = state.data.content
+                is Status.Success -> {
+                    mViewBinding.tvQuote.text = state.data.quoteContent
                     mViewBinding.tvAuthor.text = state.data.author
                 }
                 else -> {
@@ -216,7 +203,7 @@ class MainActivity : BaseActivity<ResponseViewModel, ActivityMainBinding>() {
         visibility = View.GONE
     }
 
-    fun showToast(msg: String){
-        Toast.makeText(this,msg,Toast.LENGTH_SHORT).show()
+    fun showToast(msg: String) {
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
     }
 }
