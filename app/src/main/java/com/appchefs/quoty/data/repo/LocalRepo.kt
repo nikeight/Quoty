@@ -10,7 +10,15 @@ class LocalRepo @Inject constructor(
     private val quoteDao: QuoteDao
 ) {
 
-    suspend fun getAllQuotesFromDb() : List<Quote>{
+    suspend fun getAllQuotesFromDb(): List<Quote> {
         return quoteDao.getAllQuotes()
+    }
+
+    suspend fun deleteQuoteFromDb(quote: Quote){
+        return quoteDao.delete(quote)
+    }
+
+    suspend fun updateQuote(quote: Quote){
+        return quoteDao.delete(quote)
     }
 }

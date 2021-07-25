@@ -57,4 +57,16 @@ class MainViewModel @Inject constructor(
             }
         }
     }
+
+    fun deleteQuote(quote: Quote){
+        viewModelScope.launch {
+            localRepo.deleteQuoteFromDb(quote)
+        }
+    }
+
+    fun updateQuote(quote: Quote){
+        viewModelScope.launch {
+            localRepo.updateQuote(quote)
+        }
+    }
 }
