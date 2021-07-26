@@ -27,7 +27,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 @AndroidEntryPoint
 class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
 
-
+    private val TAG = "MainActivity"
     override val mViewModel: MainViewModel by viewModels()
     private var currentTag: String? = null
 
@@ -35,15 +35,33 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
         super.onCreate(savedInstanceState)
         setContentView(mViewBinding.root)
         clickEvents()
+        setupObservers()
+        Log.i(TAG,"On created Called")
+    }
+
+    private fun setupObservers() {
+        getRandomQuoteObserver()
+        getQuoteObserver()
     }
 
     override fun getViewBinding(): ActivityMainBinding = ActivityMainBinding.inflate(layoutInflater)
 
     override fun onStart() {
         super.onStart()
-        getRandomQuoteObserver()
-        getQuoteObserver()
         networkCheck()
+        Log.i(TAG,"On onStart Called")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        loadRandomQuoteByDefault()
+        Log.i(TAG,"On Resumed Called")
+    }
+
+    private fun loadRandomQuoteByDefault(){
+        mViewBinding.btnToggleGroup.check(R.id.btn_random)
+        mViewModel.getRandomQuote()
+        Log.i(TAG,"loadRandomQuoteByDefault called")
     }
 
     private fun networkCheck() {
@@ -61,7 +79,11 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
                     )
                 }
             } else {
-                // TODO: Implement the State of the LiveData
+                if (mViewModel.randomQuote.value is Status.Error){
+                    loadRandomQuoteByDefault()
+                    mViewBinding.btnToggleGroup.check(R.id.btn_random)
+                }
+
                 mViewBinding.textViewNetworkStatus.text = getString(R.string.network_status_online)
                 mViewBinding.networkStatusLayout.apply {
                     setBackgroundColor(
@@ -121,14 +143,18 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
     }
 
     private fun getRandomQuoteObserver() {
-        mViewModel.randomQuote.observe(this, Observer { state ->
+        mViewModel.randomQuote.observe(this, { state ->
             when (state) {
                 is Status.Error -> {
                     showToast(state.message)
                 }
                 is Status.Success -> {
-                    mViewBinding.tvQuote.text = state.data.quoteContent
-                    mViewBinding.tvAuthor.text = state.data.author
+                        mViewBinding.tvQuote.text = state.data.quoteContent
+                        mViewBinding.tvAuthor.text = state.data.author
+                }
+                is Status.Loading -> {
+                    mViewBinding.tvQuote.text = getString(R.string.toast_msg_loading)
+                    mViewBinding.tvAuthor.text = "..."
                 }
                 else -> {
                     mViewBinding.tvQuote.text = getString(R.string.toast_msg_loading)
@@ -147,6 +173,10 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
                 is Status.Success -> {
                     mViewBinding.tvQuote.text = state.data.quoteContent
                     mViewBinding.tvAuthor.text = state.data.author
+                }
+                is Status.Loading -> {
+                    mViewBinding.tvQuote.text = getString(R.string.toast_msg_loading)
+                    mViewBinding.tvAuthor.text = "..."
                 }
                 else -> {
                     mViewBinding.tvQuote.text = getString(R.string.toast_msg_loading)

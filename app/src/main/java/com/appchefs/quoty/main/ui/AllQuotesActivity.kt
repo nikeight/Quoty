@@ -36,9 +36,10 @@ class AllQuotesActivity : BaseActivity<MainViewModel, ActivityAllQuotesBinding>(
     }
 
     private fun initView() {
-        mViewBinding.run {
+        mViewBinding.apply {
             rvAllQuotes.layoutManager = LinearLayoutManager(this@AllQuotesActivity)
             rvAllQuotes.adapter = mAdapter
+            rvAllQuotes.setHasFixedSize(true)
 
             ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT){
                 override fun onMove(
@@ -59,7 +60,7 @@ class AllQuotesActivity : BaseActivity<MainViewModel, ActivityAllQuotesBinding>(
                         }
 
                         ItemTouchHelper.RIGHT -> {
-                            var quote = mAdapter.currentList[viewHolder.adapterPosition]
+                            val quote = mAdapter.currentList[viewHolder.adapterPosition]
                             quote.isFavorite = true
                             mViewModel.updateQuote(quote)
                             Toast.makeText(this@AllQuotesActivity,"Quote updated successfully",Toast.LENGTH_SHORT).show()
