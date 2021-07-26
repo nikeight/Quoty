@@ -49,7 +49,8 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
     private fun networkCheck() {
         NetworkUtils.getNetworkLiveData(applicationContext).observe(this) { isConnected ->
             if (!isConnected) {
-                mViewBinding.textViewNetworkStatus.text = getString(R.string.network_status_no_connections)
+                mViewBinding.textViewNetworkStatus.text =
+                    getString(R.string.network_status_no_connections)
                 mViewBinding.networkStatusLayout.apply {
                     show()
                     setBackgroundColor(
@@ -182,7 +183,7 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
             }
 
             R.id.saved_item_icon -> {
-                startActivity(Intent(this,AllQuotesActivity::class.java))
+                startActivity(Intent(this, AllQuotesActivity::class.java))
                 true
             }
 

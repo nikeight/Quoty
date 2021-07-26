@@ -19,6 +19,6 @@ class LocalRepo @Inject constructor(
     }
 
     suspend fun updateQuote(quote: Quote){
-        return quoteDao.delete(quote)
+        return quoteDao.update(quote)
     }
 }
