@@ -2,6 +2,7 @@ package com.appchefs.quoty.main.ui
 
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.lifecycle.Observer
@@ -77,8 +78,11 @@ class AllQuotesActivity : BaseActivity<MainViewModel, ActivityAllQuotesBinding>(
     private fun setUpObserver(){
         mViewModel.allQuote.observe(this, Observer {
            if (it.isNotEmpty()){
+               mViewBinding.tvEmptyQuoteList.visibility = View.GONE
                Log.d("QuoteList",it.toString())
                mAdapter.submitList(it.toMutableList())
+           }else{
+               mViewBinding.tvEmptyQuoteList.visibility = View.VISIBLE
            }
         })
     }

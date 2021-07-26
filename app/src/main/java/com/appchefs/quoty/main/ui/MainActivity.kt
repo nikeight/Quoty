@@ -49,7 +49,7 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
     private fun networkCheck() {
         NetworkUtils.getNetworkLiveData(applicationContext).observe(this) { isConnected ->
             if (!isConnected) {
-                mViewBinding.textViewNetworkStatus.text = "No Connections"
+                mViewBinding.textViewNetworkStatus.text = getString(R.string.network_status_no_connections)
                 mViewBinding.networkStatusLayout.apply {
                     show()
                     setBackgroundColor(
@@ -61,7 +61,7 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
                 }
             } else {
                 // TODO: Implement the State of the LiveData
-                mViewBinding.textViewNetworkStatus.text = "Back Online"
+                mViewBinding.textViewNetworkStatus.text = getString(R.string.network_status_online)
                 mViewBinding.networkStatusLayout.apply {
                     setBackgroundColor(
                         ContextCompat.getColor(
@@ -130,7 +130,8 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
                     mViewBinding.tvAuthor.text = state.data.author
                 }
                 else -> {
-                    showToast("Loading")
+                    mViewBinding.tvQuote.text = getString(R.string.toast_msg_loading)
+                    mViewBinding.tvAuthor.text = "..."
                 }
             }
         })
@@ -147,7 +148,8 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
                     mViewBinding.tvAuthor.text = state.data.author
                 }
                 else -> {
-                    showToast("Loading")
+                    mViewBinding.tvQuote.text = getString(R.string.toast_msg_loading)
+                    mViewBinding.tvAuthor.text = "..."
                 }
             }
         })

@@ -1,4 +1,15 @@
 <resources>
     <string name="app_name">Quoty</string>
     <string name="api_error">Something went wrong, not able to fetch the data</string>
+    <string name="network_status_no_connections">No Connections</string>
+    <string name="network_status_online">Back Online</string>
+    <string name="toast_msg_loading">Loading</string>
+    <string name="dummy_quote">Things that you own end up by owning you</string>
+    <string name="dummy_author">- Brad Pitt</string>
+    <string name="fab_button_description">FAB Button</string>
+    <string name="btn_text_wisdom">Wisdom</string>
+    <string name="btn_text_tech">Tech</string>
+    <string name="btn_text_life">Life</string>
+    <string name="btn_text_random">Random</string>
+    <string name="no_quote_text">No quotes available right now</string>
 </resources>
