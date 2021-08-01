@@ -14,6 +14,7 @@ import com.appchefs.quoty.databinding.ActivityAllQuotesBinding
 import com.appchefs.quoty.main.base.BaseActivity
 import com.appchefs.quoty.main.ui.adapter.QuoteAdapter
 import com.appchefs.quoty.main.viewmodel.MainViewModel
+import com.appchefs.quoty.utils.Status
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
@@ -63,6 +64,7 @@ class AllQuotesActivity : BaseActivity<MainViewModel, ActivityAllQuotesBinding>(
                             val quote = mAdapter.currentList[viewHolder.adapterPosition]
                             quote.isFavorite = true
                             mViewModel.updateQuote(quote)
+                            mAdapter.notifyItemChanged(viewHolder.adapterPosition)
                             Toast.makeText(this@AllQuotesActivity,"Quote updated successfully",Toast.LENGTH_SHORT).show()
                         }
                     }
@@ -77,14 +79,21 @@ class AllQuotesActivity : BaseActivity<MainViewModel, ActivityAllQuotesBinding>(
     }
 
     private fun setUpObserver(){
-        mViewModel.allQuote.observe(this, Observer {
-           if (it.isNotEmpty()){
-               mViewBinding.tvEmptyQuoteList.visibility = View.GONE
-               Log.d("QuoteList",it.toString())
-               mAdapter.submitList(it.toMutableList())
-           }else{
-               mViewBinding.tvEmptyQuoteList.visibility = View.VISIBLE
-           }
-        })
+        mViewModel.allQuote.observe(this){status ->
+            when(status){
+                is Status.Loading -> mViewBinding.tvEmptyQuoteList.text = "Loading"
+                is Status.Error -> {
+                    mViewBinding.tvEmptyQuoteList.visibility = View.VISIBLE
+                    mViewBinding.rvAllQuotes.visibility = View.GONE
+                }
+                is Status.Success -> {
+                    mViewBinding.tvEmptyQuoteList.visibility = View.GONE
+                    mViewBinding.rvAllQuotes.visibility = View.VISIBLE
+                    if (status.data.isNotEmpty()){
+                        mAdapter.submitList(status.data.toMutableList())
+                    }
+                }
+            }
+        }
     }
 }

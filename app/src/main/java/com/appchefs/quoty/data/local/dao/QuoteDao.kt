@@ -2,6 +2,8 @@ package com.appchefs.quoty.data.local.dao
 
 import androidx.room.*
 import com.appchefs.quoty.data.model.Quote
+import com.appchefs.quoty.utils.Resource
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface QuoteDao {
@@ -13,7 +15,7 @@ interface QuoteDao {
     fun getQuote(quoteId: String): kotlinx.coroutines.flow.Flow<Quote>
 
     @Query("SELECT * FROM ${Quote.TABLE_NAME}")
-    suspend fun getAllQuotes() : List<Quote>
+    fun getAllQuotes() : Flow<List<Quote>>
 
     @Delete
     suspend fun delete(quote: Quote)

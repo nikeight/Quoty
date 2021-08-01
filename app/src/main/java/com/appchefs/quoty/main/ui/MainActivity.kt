@@ -149,8 +149,8 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
                     showToast(state.message)
                 }
                 is Status.Success -> {
-                        mViewBinding.tvQuote.text = state.data.quoteContent
-                        mViewBinding.tvAuthor.text = state.data.author
+                        mViewBinding.tvQuote.text = state.data?.quoteContent ?: "loading"
+                        mViewBinding.tvAuthor.text = state.data?.author ?: "..."
                 }
                 is Status.Loading -> {
                     mViewBinding.tvQuote.text = getString(R.string.toast_msg_loading)
@@ -165,14 +165,14 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
     }
 
     private fun getQuoteObserver() {
-        mViewModel.quote.observe(this, Observer { state ->
+        mViewModel.quote.observe(this, { state ->
             when (state) {
                 is Status.Error -> {
                     showToast(state.message)
                 }
                 is Status.Success -> {
-                    mViewBinding.tvQuote.text = state.data.quoteContent
-                    mViewBinding.tvAuthor.text = state.data.author
+                    mViewBinding.tvQuote.text = state.data?.quoteContent ?: "loading"
+                    mViewBinding.tvAuthor.text = state.data?.author ?: "..."
                 }
                 is Status.Loading -> {
                     mViewBinding.tvQuote.text = getString(R.string.toast_msg_loading)
