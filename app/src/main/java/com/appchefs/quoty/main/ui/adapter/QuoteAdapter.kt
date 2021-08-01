@@ -14,7 +14,8 @@ class QuoteAdapter() : ListAdapter<Quote, QuoteViewHolder>(DIFF_CALLBACK) {
             LayoutInflater.from(parent.context),
             parent,
             false
-        )
+        ),
+        parent.context
     )
 
     override fun onBindViewHolder(holder: QuoteViewHolder, position: Int) =

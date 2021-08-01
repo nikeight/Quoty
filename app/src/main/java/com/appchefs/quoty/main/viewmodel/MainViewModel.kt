@@ -29,8 +29,8 @@ class MainViewModel @Inject constructor(
     private val _quote = MutableLiveData<Status<Quote>>()
     val quote: LiveData<Status<Quote>> = _quote
 
-    private val _allQuotes = MutableLiveData<List<Quote>>()
-    val allQuote: LiveData<List<Quote>> = _allQuotes
+    private val _allQuotes = MutableLiveData<Status<List<Quote>>>()
+    val allQuote: LiveData<Status<List<Quote>>> = _allQuotes
 
     fun getRandomQuote() {
         viewModelScope.launch {
@@ -52,7 +52,11 @@ class MainViewModel @Inject constructor(
 
     fun getAllQuotes() {
         viewModelScope.launch {
-            localRepo.getAllQuotesFromDb().let {
+            localRepo.getAllDataFromLocal().onStart {
+                _allQuotes.value = Status.loading()
+            }.map { resources ->
+                Status.fromResource(resources)
+            }.collect {
                 _allQuotes.value = it
             }
         }
