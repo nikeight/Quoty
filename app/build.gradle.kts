@@ -111,6 +111,9 @@ dependencies {
     kapt(Hilt.daggerCompiler)
     kapt(Hilt.hiltCompiler)
 
+    // Work Manager
+    implementation(WorkManager.workManager)
+
     // Testing
     testImplementation(Testing.core)
     testImplementation(Testing.coroutines)

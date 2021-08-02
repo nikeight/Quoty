@@ -14,6 +14,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
+import androidx.work.PeriodicWorkRequest
 import com.appchefs.quoty.R
 import com.appchefs.quoty.databinding.ActivityMainBinding
 import com.appchefs.quoty.main.base.BaseActivity

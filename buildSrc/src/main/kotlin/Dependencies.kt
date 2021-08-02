@@ -61,3 +61,7 @@ object Room {
     const val ktx = "androidx.room:room-ktx:2.2.6"
     const val runtime = "androidx.room:room-runtime:2.2.6"
 }
+
+object WorkManager{
+    const val workManager = "androidx.work:work-runtime-ktx:2.2.0"
+}
