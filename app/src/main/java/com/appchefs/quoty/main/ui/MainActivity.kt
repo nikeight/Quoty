@@ -50,7 +50,7 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
             .build()
 
         val periodicNotificationWorkRequest =
-            PeriodicWorkRequestBuilder<NotificationWorker>(15, TimeUnit.MINUTES)
+            PeriodicWorkRequestBuilder<NotificationWorker>(12, TimeUnit.HOURS)
                 .setConstraints(constraints)
                 .build()
 

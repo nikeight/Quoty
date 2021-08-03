@@ -28,7 +28,8 @@ class NotificationWorker(
 
         return if (response.isSuccessful && response.body() != null) {
             val quoteContent = response.body()?.quoteContent
-            sendNotification(quoteContent!!)
+            val author = response.body()?.author
+            sendNotification(quoteContent!!,author!!)
             Log.i("WorkManager", "Success")
             Result.success()
         } else {
@@ -37,17 +38,19 @@ class NotificationWorker(
         }
     }
 
-    private fun sendNotification(quoteContent: String) {
+    private fun sendNotification(quoteContent: String, author: String) {
 
         val notificationManager =
             applicationContext
                 .getSystemService(Context.NOTIFICATION_SERVICE)
                     as NotificationManager
 
+        val notificationTitle = "Quote of the day by $author"
+
         val notification = NotificationCompat.Builder(
             applicationContext,
             Constants.QUOTE_NOTIFICATION_CHANNEL
-        ).setContentTitle(Constants.NOTIFICATION_TITLE)
+        ).setContentTitle(notificationTitle)
             .setContentText(quoteContent)
             .setSmallIcon(R.drawable.ic_quote_vector)
             .setStyle(NotificationCompat.BigTextStyle())
