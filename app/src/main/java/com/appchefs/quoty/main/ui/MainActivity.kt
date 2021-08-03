@@ -40,7 +40,6 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
         setContentView(mViewBinding.root)
         clickEvents()
         setupObservers()
-        startNotificationWorK()
         Log.i(TAG, "On created Called")
     }
 
@@ -78,19 +77,17 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
     override fun onStart() {
         super.onStart()
         networkCheck()
-        Log.i(TAG, "On onStart Called")
+        startNotificationWorK()
     }
 
     override fun onResume() {
         super.onResume()
         loadRandomQuoteByDefault()
-        Log.i(TAG, "On Resumed Called")
     }
 
     private fun loadRandomQuoteByDefault() {
         mViewBinding.btnToggleGroup.check(R.id.btn_random)
         mViewModel.getRandomQuote()
-        Log.i(TAG, "loadRandomQuoteByDefault called")
     }
 
     private fun networkCheck() {
@@ -178,7 +175,7 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
                     showToast(state.message)
                 }
                 is Status.Success -> {
-                    mViewBinding.tvQuote.text = state.data?.quoteContent ?: "loading"
+                    mViewBinding.tvQuote.text = state.data?.quoteContent ?: "Loading"
                     mViewBinding.tvAuthor.text = state.data?.author ?: "..."
                 }
                 is Status.Loading -> {
