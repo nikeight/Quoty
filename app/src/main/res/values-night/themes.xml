@@ -6,8 +6,9 @@
         <item name="colorPrimaryVariant">@color/purple_500</item>
         <item name="colorOnPrimary">@color/white</item>
 
-<!--        Fonts family -->
-        <item name="fontFamily">@font/mali_light</item>
+        <!--        Fonts family -->
+        <item name="fontFamily">@font/mali_regular</item>
+        <item name="drawableTint">@color/white</item>
 
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/purple_200</item>
@@ -17,4 +18,5 @@
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
     </style>
+
 </resources>

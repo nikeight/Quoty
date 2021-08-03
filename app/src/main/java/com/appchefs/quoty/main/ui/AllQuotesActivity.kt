@@ -57,7 +57,7 @@ class AllQuotesActivity : BaseActivity<MainViewModel, ActivityAllQuotesBinding>(
                         ItemTouchHelper.LEFT -> {
                             val quote = mAdapter.currentList[viewHolder.adapterPosition]
                             mViewModel.deleteQuote(quote)
-                            Toast.makeText(this@AllQuotesActivity,"Quote deleted from db",Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this@AllQuotesActivity,"Quote deleted",Toast.LENGTH_SHORT).show()
                         }
 
                         ItemTouchHelper.RIGHT -> {
@@ -65,7 +65,7 @@ class AllQuotesActivity : BaseActivity<MainViewModel, ActivityAllQuotesBinding>(
                             quote.isFavorite = true
                             mViewModel.updateQuote(quote)
                             mAdapter.notifyItemChanged(viewHolder.adapterPosition)
-                            Toast.makeText(this@AllQuotesActivity,"Quote updated successfully",Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this@AllQuotesActivity,"Quote updated",Toast.LENGTH_SHORT).show()
                         }
                     }
                 }

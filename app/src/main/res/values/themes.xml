@@ -7,7 +7,8 @@
         <item name="colorOnPrimary">@color/black</item>
 
         <!--        Fonts family -->
-        <item name="fontFamily">@font/mali_semi_bold</item>
+        <item name="fontFamily">@font/mali_regular</item>
+        <item name="drawableTint">@color/black</item>
 
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/purple_500</item>
@@ -17,7 +18,5 @@
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
     </style>
-
-
 
 </resources>
