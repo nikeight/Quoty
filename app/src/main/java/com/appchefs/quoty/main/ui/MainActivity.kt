@@ -14,15 +14,18 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
-import androidx.work.PeriodicWorkRequest
+import androidx.lifecycle.lifecycleScope
+import androidx.work.*
 import com.appchefs.quoty.R
 import com.appchefs.quoty.databinding.ActivityMainBinding
 import com.appchefs.quoty.main.base.BaseActivity
 import com.appchefs.quoty.main.viewmodel.MainViewModel
 import com.appchefs.quoty.utils.NetworkUtils
 import com.appchefs.quoty.utils.Status
+import com.appchefs.quoty.worker.NotificationWorker
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import java.util.concurrent.TimeUnit
 
 @ExperimentalCoroutinesApi
 @AndroidEntryPoint
@@ -37,8 +40,33 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
         setContentView(mViewBinding.root)
         clickEvents()
         setupObservers()
-        Log.i(TAG,"On created Called")
+        startNotificationWorK()
+        Log.i(TAG, "On created Called")
     }
+
+    private fun startNotificationWorK() {
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+
+        val periodicNotificationWorkRequest =
+            PeriodicWorkRequestBuilder<NotificationWorker>(15, TimeUnit.MINUTES)
+                .setConstraints(constraints)
+                .build()
+
+        WorkManager.getInstance(this)
+            .enqueue(periodicNotificationWorkRequest)
+
+        WorkManager.getInstance(this).getWorkInfoByIdLiveData(periodicNotificationWorkRequest.id)
+            .observe(this, { workInfo ->
+                if (workInfo != null && workInfo.state == WorkInfo.State.SUCCEEDED) {
+                    Log.i("WorkStatus", "Success")
+                } else {
+                    Log.i("WorkStatus", "Error")
+                }
+            })
+    }
+
 
     private fun setupObservers() {
         getRandomQuoteObserver()
@@ -50,19 +78,19 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
     override fun onStart() {
         super.onStart()
         networkCheck()
-        Log.i(TAG,"On onStart Called")
+        Log.i(TAG, "On onStart Called")
     }
 
     override fun onResume() {
         super.onResume()
         loadRandomQuoteByDefault()
-        Log.i(TAG,"On Resumed Called")
+        Log.i(TAG, "On Resumed Called")
     }
 
-    private fun loadRandomQuoteByDefault(){
+    private fun loadRandomQuoteByDefault() {
         mViewBinding.btnToggleGroup.check(R.id.btn_random)
         mViewModel.getRandomQuote()
-        Log.i(TAG,"loadRandomQuoteByDefault called")
+        Log.i(TAG, "loadRandomQuoteByDefault called")
     }
 
     private fun networkCheck() {
@@ -80,7 +108,7 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
                     )
                 }
             } else {
-                if (mViewModel.randomQuote.value is Status.Error){
+                if (mViewModel.randomQuote.value is Status.Error) {
                     loadRandomQuoteByDefault()
                     mViewBinding.btnToggleGroup.check(R.id.btn_random)
                 }
@@ -150,8 +178,8 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
                     showToast(state.message)
                 }
                 is Status.Success -> {
-                        mViewBinding.tvQuote.text = state.data?.quoteContent ?: "loading"
-                        mViewBinding.tvAuthor.text = state.data?.author ?: "..."
+                    mViewBinding.tvQuote.text = state.data?.quoteContent ?: "loading"
+                    mViewBinding.tvAuthor.text = state.data?.author ?: "..."
                 }
                 is Status.Loading -> {
                     mViewBinding.tvQuote.text = getString(R.string.toast_msg_loading)
