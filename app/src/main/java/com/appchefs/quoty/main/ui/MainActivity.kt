@@ -53,7 +53,7 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
                 .setConstraints(constraints)
                 .build()
 
-        WorkManager.getInstance(this)
+        WorkManager.getInstance(applicationContext)
             .enqueue(periodicNotificationWorkRequest)
 
         WorkManager.getInstance(this).getWorkInfoByIdLiveData(periodicNotificationWorkRequest.id)
