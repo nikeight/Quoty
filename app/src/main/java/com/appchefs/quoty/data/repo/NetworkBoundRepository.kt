@@ -45,11 +45,16 @@ abstract class NetworkBoundRepository<RESULT, REQUEST> {
             emit(Resource.Failed(apiResponse.message()))
         }
 
-        emitAll(
-            fetchFromLocal().map {
-                Resource.Success(it)
-            }
+        emit(
+            Resource.Success(fetchFromLocal().first())
         )
+
+//        emitAll(
+//            fetchFromLocal().map {
+//                Resource.Success(it)
+//            }
+//        )
+
     }.catch { e ->
         e.printStackTrace()
         emit(Resource.Failed("Network error! can't get latest quote"))
