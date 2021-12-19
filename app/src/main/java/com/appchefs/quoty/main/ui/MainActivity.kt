@@ -38,10 +38,16 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(mViewBinding.root)
+
+        // Define the Worker class at background
+        startNotificationWorK()
+
         clickEvents()
         setupObservers()
         Log.i(TAG, "On created Called")
     }
+
+    override fun getViewBinding(): ActivityMainBinding = ActivityMainBinding.inflate(layoutInflater)
 
     private fun startNotificationWorK() {
         val constraints = Constraints.Builder()
@@ -50,6 +56,7 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
 
         val periodicNotificationWorkRequest =
             PeriodicWorkRequestBuilder<NotificationWorker>(12, TimeUnit.HOURS)
+                .setInitialDelay(30, TimeUnit.SECONDS)
                 .setConstraints(constraints)
                 .build()
 
@@ -58,26 +65,24 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
 
         WorkManager.getInstance(this).getWorkInfoByIdLiveData(periodicNotificationWorkRequest.id)
             .observe(this, { workInfo ->
-                if (workInfo != null && workInfo.state == WorkInfo.State.SUCCEEDED) {
-                    Log.i("WorkStatus", "Success")
-                } else {
-                    Log.i("WorkStatus", "Error")
+                when (workInfo.state) {
+                    WorkInfo.State.SUCCEEDED -> Log.i("WorkStatus", "Success")
+                    WorkInfo.State.BLOCKED -> Log.i("WorkStatus", "Blocked")
+                    WorkInfo.State.CANCELLED -> Log.i("WorkStatus", "Cancelled")
+                    WorkInfo.State.RUNNING -> Log.i("WorkStatus", "Running")
+                    else -> Log.i("WorkStatus", "WorkInfo")
                 }
             })
     }
-
 
     private fun setupObservers() {
         getRandomQuoteObserver()
         getQuoteObserver()
     }
 
-    override fun getViewBinding(): ActivityMainBinding = ActivityMainBinding.inflate(layoutInflater)
-
     override fun onStart() {
         super.onStart()
         networkCheck()
-        startNotificationWorK()
     }
 
     override fun onResume() {

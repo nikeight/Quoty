@@ -12,6 +12,7 @@ import com.appchefs.quoty.R
 import com.appchefs.quoty.data.remote.NetworkService
 import com.appchefs.quoty.data.remote.Networking
 import com.appchefs.quoty.utils.Constants
+import dagger.hilt.EntryPoint
 import javax.inject.Inject
 
 class NotificationWorker(
@@ -19,6 +20,9 @@ class NotificationWorker(
     workerParameters: WorkerParameters
 ) : CoroutineWorker(context, workerParameters) {
 
+
+    // Todo: Inject this network Service
+    // AssistedInjection with @HiltWorker
     lateinit var networkService: NetworkService
 
     override suspend fun doWork(): Result {

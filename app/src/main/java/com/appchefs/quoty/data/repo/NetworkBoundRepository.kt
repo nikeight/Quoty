@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.*
 import retrofit2.Response
 
 @ExperimentalCoroutinesApi
-abstract class NetworkBoundRepository<RESULT, REQUEST> {
+abstract class  NetworkBoundRepository<RESULT, REQUEST> {
 
     /**
      * Fetches Response from the Remote end points.

@@ -25,10 +25,10 @@ object Lifecycle {
 }
 
 object Hilt {
+    const val hiltAndroid = "com.google.dagger:hilt-android:2.31-alpha"
+    const val hiltViewModel = "androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha02"
     const val daggerCompiler = "com.google.dagger:hilt-android-compiler:2.31-alpha"
     const val hiltCompiler = "androidx.hilt:hilt-compiler:1.0.0-alpha02"
-    const val hiltViewModel = "androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha02"
-    const val hiltAndroid = "com.google.dagger:hilt-android:2.31-alpha"
 }
 
 object Moshi {
@@ -63,5 +63,5 @@ object Room {
 }
 
 object WorkManager{
-    const val workManager = "androidx.work:work-runtime-ktx:2.2.0"
+    const val workManager = "androidx.work:work-runtime-ktx:2.7.1"
 }
