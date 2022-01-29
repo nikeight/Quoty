@@ -12,9 +12,9 @@ interface QuoteDao {
     suspend fun addQuote(quote: Quote)
 
     @Query("SELECT * FROM ${Quote.TABLE_NAME} WHERE ID = :quoteId")
-    fun getQuote(quoteId: String): kotlinx.coroutines.flow.Flow<Quote>
+    fun getQuote(quoteId: String): Flow<Quote>
 
-    @Query("SELECT * FROM ${Quote.TABLE_NAME}")
+    @Query("SELECT * FROM ${Quote.TABLE_NAME} ORDER BY isFavorite DESC")
     fun getAllQuotes() : Flow<List<Quote>>
 
     @Delete
