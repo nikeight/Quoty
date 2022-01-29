@@ -3,7 +3,9 @@ package com.appchefs.quoty.main.ui
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.res.Configuration
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -25,6 +27,8 @@ import com.appchefs.quoty.utils.Status
 import com.appchefs.quoty.worker.NotificationWorker
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import java.io.UnsupportedEncodingException
+import java.net.URLEncoder
 import java.util.concurrent.TimeUnit
 
 @ExperimentalCoroutinesApi
@@ -166,6 +170,59 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
             }
         }
 
+        mViewBinding.twitterImageView.setOnClickListener {
+            twitterToggle(true)
+            shareTweet("${mViewBinding.tvQuote.text} - ${mViewBinding.tvAuthor.text}")
+        }
+
+    }
+
+    private fun shareTweet(message: String) {
+        val tweetIntent = Intent(Intent.ACTION_SEND)
+        tweetIntent.putExtra(Intent.EXTRA_TEXT,message)
+        tweetIntent.type = "text/plain"
+
+        val packageManager = packageManager
+        val resolvedInfoList = packageManager.queryIntentActivities(tweetIntent, PackageManager.MATCH_DEFAULT_ONLY)
+        var resolved = false
+        for (resolveInfo in resolvedInfoList){
+            // Todo Change the Package name of the Twitter here
+            if (resolveInfo.activityInfo.packageName.startsWith("com.twitter.android.PostActivity")) {
+                tweetIntent.setClassName(
+                    resolveInfo.activityInfo.packageName,
+                    resolveInfo.activityInfo.name
+                )
+                resolved = true
+                break
+            }
+        }
+
+        if (resolved){
+            startActivity(tweetIntent)
+        }else{
+            val secondaryTweetIntent = Intent()
+            secondaryTweetIntent.putExtra(Intent.EXTRA_TEXT,message)
+            secondaryTweetIntent.action = Intent.ACTION_VIEW
+            secondaryTweetIntent.data = Uri.parse("https://twitter.com/intent/tweet?text=" + urlEncode(message))
+            startActivity(secondaryTweetIntent)
+            Toast.makeText(this, "Twitter app isn't found", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    private fun urlEncode(s: String): String? {
+        return try {
+            URLEncoder.encode(s, "UTF-8")
+        } catch (e: UnsupportedEncodingException) {
+            Log.wtf(TAG, "UTF-8 should always be supported", e)
+            ""
+        }
+    }
+
+    private fun twitterToggle(state: Boolean) {
+        if (state)
+            mViewBinding.twitterImageView.setImageResource(R.drawable.twitter_selected)
+        else
+            mViewBinding.twitterImageView.setImageResource(R.drawable.twitter_unselected)
     }
 
     private fun getRandomQuoteObserver() {
@@ -175,6 +232,7 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
                     showToast(state.message)
                 }
                 is Status.Success -> {
+                    twitterToggle(false)
                     mViewBinding.tvQuote.text = state.data?.quoteContent ?: "Loading"
                     mViewBinding.tvAuthor.text = state.data?.author ?: "..."
                 }
@@ -197,6 +255,7 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
                     showToast(state.message)
                 }
                 is Status.Success -> {
+                    twitterToggle(false)
                     mViewBinding.tvQuote.text = state.data?.quoteContent ?: "loading"
                     mViewBinding.tvAuthor.text = state.data?.author ?: "..."
                 }
