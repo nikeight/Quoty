@@ -2,6 +2,9 @@ package com.appchefs.quoty.main.ui
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
@@ -117,10 +120,21 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
             }
         }
 
+        mViewBinding.clipBoardImageView.setOnClickListener {
+            val clipBoard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val clipData = ClipData.newPlainText(
+                "copied_quote",
+                "${mViewBinding.tvQuote.text} ${mViewBinding.tvAuthor.text}"
+            )
+            clipBoard.setPrimaryClip(clipData)
+            textCopiedState(true)
+            showToast("Quote Copied!!")
+        }
+
     }
 
     private fun getRandomQuoteObserver() {
-        mViewModel.randomQuote.observe(this, Observer { state ->
+        mViewModel.randomQuote.observe(this, { state ->
             when (state) {
                 is Status.Error -> {
                     showToast(state.message)
@@ -128,6 +142,7 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
                 is Status.Success -> {
                     mViewBinding.tvQuote.text = state.data.quoteContent
                     mViewBinding.tvAuthor.text = state.data.author
+                    textCopiedState(false)
                 }
                 else -> {
                     showToast("Loading")
@@ -137,7 +152,7 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
     }
 
     private fun getQuoteObserver() {
-        mViewModel.quote.observe(this, Observer { state ->
+        mViewModel.quote.observe(this, { state ->
             when (state) {
                 is Status.Error -> {
                     showToast(state.message)
@@ -145,12 +160,20 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
                 is Status.Success -> {
                     mViewBinding.tvQuote.text = state.data.quoteContent
                     mViewBinding.tvAuthor.text = state.data.author
+                    textCopiedState(false)
                 }
                 else -> {
                     showToast("Loading")
                 }
             }
         })
+    }
+
+    private fun textCopiedState(state: Boolean) {
+        if (state)
+            mViewBinding.clipBoardImageView.setImageResource(R.drawable.ic_copied_text_vector)
+        else
+            mViewBinding.clipBoardImageView.setImageResource(R.drawable.ic_copy_unselected_vector)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -180,7 +203,7 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
             }
 
             R.id.saved_item_icon -> {
-                startActivity(Intent(this,AllQuotesActivity::class.java))
+                startActivity(Intent(this, AllQuotesActivity::class.java))
                 true
             }
 
