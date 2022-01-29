@@ -2,6 +2,9 @@ package com.appchefs.quoty.main.ui
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
@@ -94,48 +97,6 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
         mViewModel.getRandomQuote()
     }
 
-    private fun networkCheck() {
-        NetworkUtils.getNetworkLiveData(applicationContext).observe(this) { isConnected ->
-            if (!isConnected) {
-                mViewBinding.textViewNetworkStatus.text =
-                    getString(R.string.network_status_no_connections)
-                mViewBinding.networkStatusLayout.apply {
-                    show()
-                    setBackgroundColor(
-                        ContextCompat.getColor(
-                            applicationContext,
-                            R.color.networkNotAvailable
-                        )
-                    )
-                }
-            } else {
-                if (mViewModel.randomQuote.value is Status.Error) {
-                    loadRandomQuoteByDefault()
-                    mViewBinding.btnToggleGroup.check(R.id.btn_random)
-                }
-
-                mViewBinding.textViewNetworkStatus.text = getString(R.string.network_status_online)
-                mViewBinding.networkStatusLayout.apply {
-                    setBackgroundColor(
-                        ContextCompat.getColor(
-                            applicationContext,
-                            R.color.networkConnected
-                        )
-                    )
-
-                    animate()
-                        .alpha(1f)
-                        .setStartDelay(1000L)
-                        .setDuration(1000L)
-                        .setListener(object : AnimatorListenerAdapter() {
-                            override fun onAnimationEnd(animation: Animator) {
-                                hide()
-                            }
-                        })
-                }
-            }
-        }
-    }
 
     private fun clickEvents() {
         mViewBinding.btnRandom.setOnClickListener {
@@ -175,6 +136,16 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
             shareTweet("${mViewBinding.tvQuote.text} - ${mViewBinding.tvAuthor.text}")
         }
 
+        mViewBinding.clipBoardImageView.setOnClickListener {
+            val clipBoard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val clipData = ClipData.newPlainText(
+                "copied_quote",
+                "${mViewBinding.tvQuote.text} ${mViewBinding.tvAuthor.text}"
+            )
+            clipBoard.setPrimaryClip(clipData)
+            textCopiedState(true)
+            showToast("Quote Copied!!")
+        }
     }
 
     private fun shareTweet(message: String) {
@@ -233,6 +204,7 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
                 }
                 is Status.Success -> {
                     twitterToggle(false)
+                    textCopiedState(false)
                     mViewBinding.tvQuote.text = state.data?.quoteContent ?: "Loading"
                     mViewBinding.tvAuthor.text = state.data?.author ?: "..."
                 }
@@ -256,6 +228,7 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
                 }
                 is Status.Success -> {
                     twitterToggle(false)
+                    textCopiedState(false)
                     mViewBinding.tvQuote.text = state.data?.quoteContent ?: "loading"
                     mViewBinding.tvAuthor.text = state.data?.author ?: "..."
                 }
@@ -306,6 +279,55 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
         }
     }
 
+    private fun textCopiedState(state: Boolean) {
+        if (state)
+            mViewBinding.clipBoardImageView.setImageResource(R.drawable.ic_copy_selected)
+        else
+            mViewBinding.clipBoardImageView.setImageResource(R.drawable.ic_copy_unselected)
+    }
+
+    private fun networkCheck() {
+        NetworkUtils.getNetworkLiveData(applicationContext).observe(this) { isConnected ->
+            if (!isConnected) {
+                mViewBinding.textViewNetworkStatus.text =
+                    getString(R.string.network_status_no_connections)
+                mViewBinding.networkStatusLayout.apply {
+                    show()
+                    setBackgroundColor(
+                        ContextCompat.getColor(
+                            applicationContext,
+                            R.color.networkNotAvailable
+                        )
+                    )
+                }
+            } else {
+                if (mViewModel.randomQuote.value is Status.Error) {
+                    loadRandomQuoteByDefault()
+                    mViewBinding.btnToggleGroup.check(R.id.btn_random)
+                }
+
+                mViewBinding.textViewNetworkStatus.text = getString(R.string.network_status_online)
+                mViewBinding.networkStatusLayout.apply {
+                    setBackgroundColor(
+                        ContextCompat.getColor(
+                            applicationContext,
+                            R.color.networkConnected
+                        )
+                    )
+
+                    animate()
+                        .alpha(1f)
+                        .setStartDelay(1000L)
+                        .setDuration(1000L)
+                        .setListener(object : AnimatorListenerAdapter() {
+                            override fun onAnimationEnd(animation: Animator) {
+                                hide()
+                            }
+                        })
+                }
+            }
+        }
+    }
 
     fun View.show() {
         visibility = View.VISIBLE
@@ -315,7 +337,7 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
         visibility = View.GONE
     }
 
-    fun showToast(msg: String) {
+    private fun showToast(msg: String) {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
     }
 }
