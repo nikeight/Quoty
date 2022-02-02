@@ -18,8 +18,10 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.work.*
 import com.appchefs.quoty.R
 import com.appchefs.quoty.databinding.ActivityMainBinding
@@ -30,6 +32,8 @@ import com.appchefs.quoty.utils.Status
 import com.appchefs.quoty.worker.NotificationWorker
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import java.io.UnsupportedEncodingException
 import java.net.URLEncoder
 import java.util.concurrent.TimeUnit
@@ -75,8 +79,8 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
 
 
     private fun setupObservers() {
-        getRandomQuoteObserver()
-        getQuoteObserver()
+        getRandomQuoteCollector()
+        getQuoteCollector()
     }
 
     override fun getViewBinding(): ActivityMainBinding = ActivityMainBinding.inflate(layoutInflater)
@@ -196,52 +200,60 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
             mViewBinding.twitterImageView.setImageResource(R.drawable.twitter_unselected)
     }
 
-    private fun getRandomQuoteObserver() {
-        mViewModel.randomQuote.observe(this, { state ->
-            when (state) {
-                is Status.Error -> {
-                    showToast(state.message)
-                }
-                is Status.Success -> {
-                    twitterToggle(false)
-                    textCopiedState(false)
-                    mViewBinding.tvQuote.text = state.data?.quoteContent ?: "Loading"
-                    mViewBinding.tvAuthor.text = state.data?.author ?: "..."
-                }
-                is Status.Loading -> {
-                    mViewBinding.tvQuote.text = getString(R.string.toast_msg_loading)
-                    mViewBinding.tvAuthor.text = "..."
-                }
-                else -> {
-                    mViewBinding.tvQuote.text = getString(R.string.toast_msg_loading)
-                    mViewBinding.tvAuthor.text = "..."
+    private fun getRandomQuoteCollector() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED){
+                mViewModel.randomQuote.collectLatest { state ->
+                    when (state) {
+                        is Status.Error -> {
+                            showToast(state.message)
+                        }
+                        is Status.Success -> {
+                            twitterToggle(false)
+                            textCopiedState(false)
+                            mViewBinding.tvQuote.text = state.data?.quoteContent ?: "Loading"
+                            mViewBinding.tvAuthor.text = state.data?.author ?: "..."
+                        }
+                        is Status.Loading -> {
+                            mViewBinding.tvQuote.text = getString(R.string.toast_msg_loading)
+                            mViewBinding.tvAuthor.text = "..."
+                        }
+                        else -> {
+                            mViewBinding.tvQuote.text = getString(R.string.toast_msg_loading)
+                            mViewBinding.tvAuthor.text = "..."
+                        }
+                    }
                 }
             }
-        })
+        }
     }
 
-    private fun getQuoteObserver() {
-        mViewModel.quote.observe(this, { state ->
-            when (state) {
-                is Status.Error -> {
-                    showToast(state.message)
-                }
-                is Status.Success -> {
-                    twitterToggle(false)
-                    textCopiedState(false)
-                    mViewBinding.tvQuote.text = state.data?.quoteContent ?: "loading"
-                    mViewBinding.tvAuthor.text = state.data?.author ?: "..."
-                }
-                is Status.Loading -> {
-                    mViewBinding.tvQuote.text = getString(R.string.toast_msg_loading)
-                    mViewBinding.tvAuthor.text = "..."
-                }
-                else -> {
-                    mViewBinding.tvQuote.text = getString(R.string.toast_msg_loading)
-                    mViewBinding.tvAuthor.text = "..."
+    private fun getQuoteCollector() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED){
+                mViewModel.quote.collectLatest { state ->
+                    when (state) {
+                        is Status.Error -> {
+                            showToast(state.message)
+                        }
+                        is Status.Success -> {
+                            twitterToggle(false)
+                            textCopiedState(false)
+                            mViewBinding.tvQuote.text = state.data?.quoteContent ?: "loading"
+                            mViewBinding.tvAuthor.text = state.data?.author ?: "..."
+                        }
+                        is Status.Loading -> {
+                            mViewBinding.tvQuote.text = getString(R.string.toast_msg_loading)
+                            mViewBinding.tvAuthor.text = "..."
+                        }
+                        else -> {
+                            mViewBinding.tvQuote.text = getString(R.string.toast_msg_loading)
+                            mViewBinding.tvAuthor.text = "..."
+                        }
+                    }
                 }
             }
-        })
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

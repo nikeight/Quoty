@@ -8,13 +8,13 @@ plugins {
 }
 
 android {
-    compileSdkVersion(30)
+    compileSdkVersion(31)
     buildToolsVersion("30.0.3")
 
     defaultConfig {
         applicationId = "com.appchefs.quoty"
         minSdkVersion(21)
-        targetSdkVersion(30)
+        targetSdkVersion(31)
         versionCode = 1
         versionName = "1.0"
 
@@ -81,6 +81,7 @@ dependencies {
     // Architecture Components
     implementation(Lifecycle.viewModel)
     implementation(Lifecycle.liveData)
+    implementation(Lifecycle.lifeCycle)
 
     // Room components
     implementation(Room.runtime)

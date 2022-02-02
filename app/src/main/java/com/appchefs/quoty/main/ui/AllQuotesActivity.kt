@@ -5,7 +5,10 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -17,6 +20,8 @@ import com.appchefs.quoty.main.viewmodel.MainViewModel
 import com.appchefs.quoty.utils.Status
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 @ExperimentalCoroutinesApi
 @AndroidEntryPoint
@@ -33,7 +38,7 @@ class AllQuotesActivity : BaseActivity<MainViewModel, ActivityAllQuotesBinding>(
         setContentView(mViewBinding.root)
 
         initView()
-        setUpObserver()
+        setUpCollector()
     }
 
     private fun initView() {
@@ -78,19 +83,23 @@ class AllQuotesActivity : BaseActivity<MainViewModel, ActivityAllQuotesBinding>(
         mViewModel.getAllQuotes()
     }
 
-    private fun setUpObserver(){
-        mViewModel.allQuote.observe(this){status ->
-            when(status){
-                is Status.Loading -> mViewBinding.tvEmptyQuoteList.text = "Loading"
-                is Status.Error -> {
-                    mViewBinding.tvEmptyQuoteList.visibility = View.VISIBLE
-                    mViewBinding.rvAllQuotes.visibility = View.GONE
-                }
-                is Status.Success -> {
-                    mViewBinding.tvEmptyQuoteList.visibility = View.GONE
-                    mViewBinding.rvAllQuotes.visibility = View.VISIBLE
-                    if (status.data.isNotEmpty()){
-                        mAdapter.submitList(status.data.toMutableList())
+    private fun setUpCollector(){
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED){
+                mViewModel.allQuote.collectLatest { status ->
+                    when(status){
+                        is Status.Loading -> mViewBinding.tvEmptyQuoteList.text = "Loading"
+                        is Status.Error -> {
+                            mViewBinding.tvEmptyQuoteList.visibility = View.VISIBLE
+                            mViewBinding.rvAllQuotes.visibility = View.GONE
+                        }
+                        is Status.Success -> {
+                            mViewBinding.tvEmptyQuoteList.visibility = View.GONE
+                            mViewBinding.rvAllQuotes.visibility = View.VISIBLE
+                            if (status.data.isNotEmpty()){
+                                mAdapter.submitList(status.data.toMutableList())
+                            }
+                        }
                     }
                 }
             }
