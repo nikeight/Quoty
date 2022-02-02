@@ -22,6 +22,7 @@ object Dependencies {
 object Lifecycle {
     const val viewModel = "androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0"
     const val liveData = "androidx.lifecycle:lifecycle-livedata-ktx:2.2.0"
+    const val lifeCycle = "androidx.lifecycle:lifecycle-runtime-ktx:2.4.0"
 }
 
 object Hilt {

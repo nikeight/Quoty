@@ -10,9 +10,7 @@ import com.appchefs.quoty.data.repo.QuoteRepository
 import com.appchefs.quoty.utils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -23,14 +21,15 @@ class MainViewModel @Inject constructor(
     private val localRepo: LocalRepo
 ) : ViewModel() {
 
-    private val _randomQuote = MutableLiveData<Status<Quote>>()
-    val randomQuote: LiveData<Status<Quote>> = _randomQuote
+    private val _randomQuote = MutableStateFlow<Status<Quote>>(Status.empty())
+    val randomQuote: StateFlow<Status<Quote>> = _randomQuote.asStateFlow()
 
-    private val _quote = MutableLiveData<Status<Quote>>()
-    val quote: LiveData<Status<Quote>> = _quote
+    private val _quote = MutableStateFlow<Status<Quote>>(Status.empty())
+    val quote: StateFlow<Status<Quote>> = _quote.asStateFlow()
 
-    private val _allQuotes = MutableLiveData<Status<List<Quote>>>()
-    val allQuote: LiveData<Status<List<Quote>>> = _allQuotes
+    private val _allQuotes = MutableStateFlow<Status<List<Quote>>>(Status.empty())
+    val allQuote: StateFlow<Status<List<Quote>>> = _allQuotes.asStateFlow()
+
 
     fun getRandomQuote() {
         viewModelScope.launch {

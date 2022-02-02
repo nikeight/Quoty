@@ -10,11 +10,15 @@ sealed class Status<T> {
 
     data class Error<T>(val message: String) : Status<T>()
 
+    class Empty<T> : Status<T>()
+
     fun isLoading(): Boolean = this is Loading
 
     fun isSuccessful(): Boolean = this is Success
 
     fun isFailed(): Boolean = this is Error
+
+    fun isEmpty() : Boolean = this is Empty
 
     companion object {
 
@@ -36,6 +40,11 @@ sealed class Status<T> {
          */
         fun <T> error(message: String) =
             Error<T>(message)
+
+        /**
+         * Returns [Status.Empty] instance.
+         */
+        fun <T> empty() = Empty<T>()
 
         /**
          * Returns [Status] from [Resource]
